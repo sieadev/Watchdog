@@ -18,9 +18,6 @@ import org.simpleyaml.configuration.ConfigurationSection;
  * The Watchdog class is responsible for initializing and managing the Discord bot and database connection.
  */
 public class Watchdog {
-    private static Watchdog instance;
-    private final ShardManager shardManager;
-    private final MySQLWrapper databaseWrapper;
 
     /**
      * Constructs a Watchdog instance, initializing the Discord bot and the MySQL database connection using configurations
@@ -33,12 +30,12 @@ public class Watchdog {
         DefaultShardManagerBuilder builder = DefaultShardManagerBuilder.createDefault(token).enableIntents(GatewayIntent.MESSAGE_CONTENT).enableIntents(GatewayIntent.GUILD_MEMBERS);
         builder.setStatus(OnlineStatus.ONLINE);
         builder.setActivity(Activity.watching("You!"));
-        shardManager = builder.build();
+        ShardManager shardManager = builder.build();
 
         String url = "jdbc:mysql://" + config.getString("sql.ip") + "/" + config.getString("sql.name");
         String user = config.getString("sql.user");
         String pass = config.getString("sql.pass");
-        databaseWrapper = new MySQLWrapper(url, user, pass);
+        MySQLWrapper databaseWrapper = new MySQLWrapper(url, user, pass);
 
         CommandManager commandManager = new CommandManager();
 
@@ -54,6 +51,6 @@ public class Watchdog {
      * @param args command-line arguments (not used).
      */
     public static void main(String[] args) {
-        instance = new Watchdog();
+        Watchdog instance = new Watchdog();
     }
 }
