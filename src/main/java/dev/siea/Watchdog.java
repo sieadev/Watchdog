@@ -1,6 +1,9 @@
 package dev.siea;
 
 
+import dev.siea.commands.CheckCommand;
+import dev.siea.commands.CommandManager;
+import dev.siea.commands.ReportCommand;
 import dev.siea.config.ConfigUtil;
 import dev.siea.database.MySQLWrapper;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -14,6 +17,7 @@ import org.simpleyaml.configuration.ConfigurationSection;
  * The Watchdog class is responsible for initializing and managing the Discord bot and database connection.
  */
 public class Watchdog {
+    private static Watchdog instance;
     private final ShardManager shardManager;
     private final MySQLWrapper databaseWrapper;
 
@@ -34,6 +38,12 @@ public class Watchdog {
         String user = config.getString("sql.user");
         String pass = config.getString("sql.pass");
         databaseWrapper = new MySQLWrapper(url, user, pass);
+
+        CommandManager commandManager = new CommandManager();
+
+        shardManager.addEventListener(new CommandManager());
+        commandManager.registerCommand(new CheckCommand(databaseWrapper));
+        commandManager.registerCommand(new ReportCommand(databaseWrapper));
     }
 
     /**
@@ -42,6 +52,6 @@ public class Watchdog {
      * @param args command-line arguments (not used).
      */
     public static void main(String[] args) {
-        Watchdog watchdog = new Watchdog();
+        instance = new Watchdog();
     }
 }
