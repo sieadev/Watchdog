@@ -52,7 +52,7 @@ public class CheckCommand implements WatchdogCommand {
         EmbedBuilder embed = new EmbedBuilder()
                 .setTitle("User Report History")
                 .setThumbnail(target.getEffectiveAvatarUrl())
-                .setAuthor(target.getAsMention(), null, target.getEffectiveAvatarUrl())
+                .setAuthor(target.getAsTag(), null, target.getEffectiveAvatarUrl())
                 .setTimestamp(event.getInteraction().getTimeCreated());
 
         int reportCount = watchdogUser.reports().size();
