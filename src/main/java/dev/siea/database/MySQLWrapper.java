@@ -81,7 +81,7 @@ public class MySQLWrapper {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } catch (IllegalArgumentException e) {
-            System.out.println("Invalid report type found in database for user " + id);
+            System.out.println("[Watchdog] Invalid report type found in database for user " + id);
         }
 
         return new WatchDogUser(id, reportIDs);
@@ -171,7 +171,7 @@ public class MySQLWrapper {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } catch (IllegalArgumentException e) {
-            System.out.println("Invalid report type found in database for report ID " + reportID);
+            System.out.println("[Watchdog] Invalid report type found in database for report ID " + reportID);
         }
 
         return null;

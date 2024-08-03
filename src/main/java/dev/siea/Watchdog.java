@@ -30,7 +30,17 @@ public class Watchdog {
         DefaultShardManagerBuilder builder = DefaultShardManagerBuilder.createDefault(token).enableIntents(GatewayIntent.MESSAGE_CONTENT).enableIntents(GatewayIntent.GUILD_MEMBERS);
         builder.setStatus(OnlineStatus.ONLINE);
         builder.setActivity(Activity.watching("You!"));
-        ShardManager shardManager = builder.build();
+
+        ShardManager shardManager;
+        try {
+            shardManager = builder.build();
+        } catch (IllegalArgumentException e) {
+            System.out.println("[Watchdog] Invalid token. Disabling...");
+            return;
+        } catch (Exception e){
+            System.out.println("[Watchdog] Error while setting up shard manager");
+            return;
+        }
 
         String url = "jdbc:mysql://" + config.getString("sql.ip") + "/" + config.getString("sql.name");
         String user = config.getString("sql.user");
