@@ -1,5 +1,12 @@
-# Watchdog
-Fast. Safe. Effective.
+<div align='center'>
+
+<h1>Watchdog🐕️</h1>
+
+<p>Fast. Safe. Effective.</p>
+
+<h4> <a href="https://github.com/sieadev/watchdog/issues"> Report Bug </a> <span> · </span> <a href="https://github.com/sieadev/watchdog/issues"> Request Feature </a> </h4>
+<br>
+</div>
 
 ## Overview
 
@@ -36,7 +43,7 @@ The bot supports the following report types:
 1. **Clone the repository:**
    ```SH
    git clone https://github.com/sieadev/watchdog.git
-   cd discord-watchdog-bot
+   cd Watchdog
    ```
 2. **Compile the Bot**
    ```SH
