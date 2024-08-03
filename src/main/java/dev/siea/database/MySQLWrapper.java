@@ -88,24 +88,56 @@ public class MySQLWrapper {
     }
 
     /**
-     * Submits a report to the database.
+     * Submits a report to the database and returns a result code.
      *
      * @param reportQuery a ReportQuery object containing the report details.
+     * @return an integer code indicating the result of the operation.
      */
-    public void submitReport(@NotNull ReportQuery reportQuery) {
+    public int submitReport(@NotNull ReportQuery reportQuery) {
         String insertSQL = "INSERT INTO reports (reported_user_id, reporter_user_id, report_type_id, description) VALUES (?, ?, ?, ?)";
+        String checkReportSQL = "SELECT COUNT(*) FROM reports WHERE reported_user_id = ? AND reporter_user_id = ? AND report_type_id = ?";
+        String checkReportsCountSQL = "SELECT COUNT(*) FROM reports WHERE reporter_user_id = ? AND reported_at >= NOW() - INTERVAL 24 HOUR";
 
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
+        try (Connection connection = dataSource.getConnection()) {
 
-            preparedStatement.setString(1, reportQuery.userID());
-            preparedStatement.setString(2, reportQuery.reporterID());
-            preparedStatement.setString(3, reportQuery.type().name());
-            preparedStatement.setString(4, reportQuery.description());
+            // Check if the user has already reported the same target with the same reason
+            try (PreparedStatement checkReportStmt = connection.prepareStatement(checkReportSQL)) {
+                checkReportStmt.setString(1, reportQuery.userID());
+                checkReportStmt.setString(2, reportQuery.reporterID());
+                checkReportStmt.setString(3, reportQuery.type().name());
 
-            preparedStatement.executeUpdate();
+                try (ResultSet resultSet = checkReportStmt.executeQuery()) {
+                    if (resultSet.next() && resultSet.getInt(1) > 0) {
+                        return 409;
+                    }
+                }
+            }
+
+            // Check if the user has exceeded the maximum reports in the last 24 hours
+            try (PreparedStatement checkReportsCountStmt = connection.prepareStatement(checkReportsCountSQL)) {
+                checkReportsCountStmt.setString(1, reportQuery.reporterID());
+
+                try (ResultSet resultSet = checkReportsCountStmt.executeQuery()) {
+                    if (resultSet.next() && resultSet.getInt(1) >= 5) { // Assume 5 is the max reports in 24 hours
+                        return 403;
+                    }
+                }
+            }
+
+            // If checks pass, insert the report
+            try (PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
+                preparedStatement.setString(1, reportQuery.userID());
+                preparedStatement.setString(2, reportQuery.reporterID());
+                preparedStatement.setString(3, reportQuery.type().name());
+                preparedStatement.setString(4, reportQuery.description());
+
+                preparedStatement.executeUpdate();
+                return 200;
+            }
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
+            return -1; // Indicate a generic SQL error
         }
     }
 

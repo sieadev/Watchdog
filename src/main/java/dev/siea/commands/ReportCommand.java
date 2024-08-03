@@ -50,19 +50,50 @@ public class ReportCommand implements WatchdogCommand {
         ReportType type = ReportType.valueOf(Objects.requireNonNull(event.getOption("reportType")).getAsString());
 
         ReportQuery query = new ReportQuery(target.getId(), reporter.getId(), type, "No description.");
-
-        databaseWrapper.submitReport(query);
+        int result = databaseWrapper.submitReport(query);
 
         EmbedBuilder embed = new EmbedBuilder()
-                .setTitle("Report Submitted")
-                .setDescription("Your report has been successfully submitted.")
-                .setColor(Color.GREEN)
-                .addField("Reported User", target.getAsMention(), true)
-                .addField("Report Type", type.name().replaceAll("_", " "), true)
-                .addField("Reporter", reporter.getAsMention(), true)
-                .setFooter("Thank you for helping us keep the community safe.")
-                .setTimestamp(event.getInteraction().getTimeCreated());
+                .setTimestamp(event.getInteraction().getTimeCreated())
+                .setFooter("Thank you for helping us keep the community safe.");
 
-        event.replyEmbeds(embed.build()).queue();
+        switch (result) {
+            case 200:
+                embed.setTitle("Report Submitted")
+                        .setDescription("Your report has been successfully submitted.")
+                        .setColor(Color.GREEN)
+                        .addField("Reported User", target.getAsMention(), true)
+                        .addField("Report Type", type.name().replaceAll("_", " "), true)
+                        .addField("Reporter", reporter.getAsMention(), true);
+                event.replyEmbeds(embed.build()).queue();
+                break;
+
+            case 409:
+                embed.setTitle("Report Failed")
+                        .setDescription("You have already reported this user for this reason.")
+                        .setColor(Color.RED);
+                event.replyEmbeds(embed.build()).queue();
+                break;
+
+            case 429:
+                embed.setTitle("Report Failed")
+                        .setDescription("You can only report once per minute.")
+                        .setColor(Color.RED);
+                event.replyEmbeds(embed.build()).queue();
+                break;
+
+            case 403:
+                embed.setTitle("Report Failed")
+                        .setDescription("You can't report more than 5 users in the last 24 hours.")
+                        .setColor(Color.RED);
+                event.replyEmbeds(embed.build()).queue();
+                break;
+
+            default:
+                embed.setTitle("Report Failed")
+                        .setDescription("An unexpected error occurred while submitting your report.")
+                        .setColor(Color.RED);
+                event.replyEmbeds(embed.build()).queue();
+                break;
+        }
     }
 }
