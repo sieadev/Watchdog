@@ -3,6 +3,7 @@ package dev.siea;
 
 import dev.siea.commands.CheckCommand;
 import dev.siea.commands.CommandManager;
+import dev.siea.commands.HelpCommand;
 import dev.siea.commands.ReportCommand;
 import dev.siea.config.ConfigUtil;
 import dev.siea.database.MySQLWrapper;
@@ -44,6 +45,7 @@ public class Watchdog {
         shardManager.addEventListener(new CommandManager());
         commandManager.registerCommand(new CheckCommand(databaseWrapper));
         commandManager.registerCommand(new ReportCommand(databaseWrapper));
+        commandManager.registerCommand(new HelpCommand());
     }
 
     /**
