@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import org.jetbrains.annotations.NotNull;
 import java.awt.Color;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -50,24 +51,36 @@ public class CheckCommand implements WatchdogCommand {
 
         EmbedBuilder embed = new EmbedBuilder()
                 .setTitle("User Report History")
-                .setColor(Color.BLUE)
-                .setDescription("Here is the report history for " + target.getAsMention())
+                .setThumbnail(target.getEffectiveAvatarUrl())
+                .setAuthor(target.getAsMention(), null, target.getEffectiveAvatarUrl())
                 .setTimestamp(event.getInteraction().getTimeCreated());
 
-        if (watchdogUser.reports().isEmpty()) {
-            embed.addField("Report Status", "No reports found for this user.", false);
+        int reportCount = watchdogUser.reports().size();
+        if (reportCount == 0) {
+            embed.setDescription(target.getAsMention() + " has never been reported using Watchdog.")
+                    .setColor(Color.GREEN);
+        } else if (reportCount < 10) {
+            embed.setDescription(target.getAsMention() + " has been previously reported using Watchdog.")
+                    .setColor(Color.YELLOW);
         } else {
-            StringBuilder reportDetails = new StringBuilder();
-            for (Map.Entry<String, ReportType> entry : watchdogUser.reports().entrySet()) {
-                String reportId = entry.getKey();
-                ReportType reportType = entry.getValue();
-                reportDetails.append("Report ID: ").append(reportId)
-                        .append("\nType: ").append(reportType.name().replaceAll("_", " "))
-                        .append("\n\n");
-            }
-            embed.addField("Report Details", reportDetails.toString(), false);
+            embed.setDescription(target.getAsMention() + " has been reported more than 10 times using Watchdog. Please exercise caution.")
+                    .setColor(Color.RED);
         }
 
+        if (!watchdogUser.reports().isEmpty()) {
+            HashMap<String, Integer> reportsCount = new HashMap<>();
+            for (Map.Entry<String, ReportType> entry : watchdogUser.reports().entrySet()) {
+                reportsCount.put(entry.getValue().toString(), reportsCount.getOrDefault(entry.getValue().toString(), 0) + 1);
+            }
+
+            StringBuilder reportDetails = new StringBuilder();
+            for (Map.Entry<String, Integer> entry : reportsCount.entrySet()) {
+                reportDetails.append(entry.getValue()).append("x ").append(entry.getKey().replaceAll("_", " ")).append("\n");
+            }
+
+            embed.addField("Report Breakdown", reportDetails.toString(), false);
+        }
+        embed.setFooter("Stay safe <3.");
         event.replyEmbeds(embed.build()).queue();
     }
 }
