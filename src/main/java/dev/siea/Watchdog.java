@@ -52,7 +52,7 @@ public class Watchdog {
 
         CommandManager commandManager = new CommandManager();
 
-        shardManager.addEventListener(new CommandManager());
+        shardManager.addEventListener(commandManager);
         commandManager.registerCommand(new CheckCommand(databaseWrapper));
         commandManager.registerCommand(new ReportCommand(databaseWrapper));
         commandManager.registerCommand(new HelpCommand());
