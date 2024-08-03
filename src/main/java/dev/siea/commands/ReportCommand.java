@@ -49,6 +49,24 @@ public class ReportCommand implements WatchdogCommand {
         User reporter = event.getUser();
         ReportType type = ReportType.valueOf(Objects.requireNonNull(event.getOption("report_type")).getAsString());
 
+        if (target.isBot()){
+            EmbedBuilder embed = new EmbedBuilder()
+                    .setTitle("Report Failed")
+                    .setColor(Color.RED)
+                    .setDescription("You may not report Bots");
+            event.replyEmbeds(embed.build()).queue();
+            return;
+        }
+
+        if (target == reporter){
+            EmbedBuilder embed = new EmbedBuilder()
+                    .setTitle("Report Failed")
+                    .setColor(Color.RED)
+                    .setDescription("You may not report yourself");
+            event.replyEmbeds(embed.build()).queue();
+            return;
+        }
+
         ReportQuery query = new ReportQuery(target.getId(), reporter.getId(), type, "No description.");
         int result = databaseWrapper.submitReport(query);
 
