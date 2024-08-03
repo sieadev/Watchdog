@@ -24,7 +24,9 @@ public class Watchdog {
      * from the config.yml file.
      */
     public Watchdog(){
-        ConfigurationSection config = new ConfigUtil("/config.yml").getConfig();
+        ConfigUtil configUtil = new ConfigUtil("./config.yml");
+        configUtil.save();
+        ConfigurationSection config = configUtil.getConfig();
 
         String token = config.getString("token");
         DefaultShardManagerBuilder builder = DefaultShardManagerBuilder.createDefault(token).enableIntents(GatewayIntent.MESSAGE_CONTENT).enableIntents(GatewayIntent.GUILD_MEMBERS);
@@ -41,6 +43,7 @@ public class Watchdog {
             System.out.println("[Watchdog] Error while setting up shard manager");
             return;
         }
+        System.out.println("[Watchdog] Discord bot enabled");
 
         String url = "jdbc:mysql://" + config.getString("sql.ip") + "/" + config.getString("sql.name");
         String user = config.getString("sql.user");

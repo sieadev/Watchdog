@@ -30,7 +30,13 @@ public class MySQLWrapper {
         config.setJdbcUrl(url);
         config.setUsername(username);
         config.setPassword(password);
-        dataSource = new HikariDataSource(config);
+        try {
+            dataSource = new HikariDataSource(config);
+        } catch (Exception e) {
+            System.out.println("[Watchdog] Unable to connect to MySQL database.");
+            throw new RuntimeException(e);
+        }
+        System.out.println("[Watchdog] Connected to MySQL database.");
         createReportsTable();
     }
 
