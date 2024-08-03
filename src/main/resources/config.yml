@@ -1,1 +1,6 @@
 token: ""
+sql:
+  ip: ""
+  name: ""
+  user: ""
+  password: ""

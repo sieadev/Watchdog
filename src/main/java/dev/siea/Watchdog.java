@@ -29,7 +29,7 @@ public class Watchdog {
         ConfigurationSection config = configUtil.getConfig();
 
         String token = config.getString("token");
-        DefaultShardManagerBuilder builder = DefaultShardManagerBuilder.createDefault(token).enableIntents(GatewayIntent.MESSAGE_CONTENT).enableIntents(GatewayIntent.GUILD_MEMBERS);
+        DefaultShardManagerBuilder builder = DefaultShardManagerBuilder.createDefault(token).enableIntents(GatewayIntent.GUILD_MEMBERS);
         builder.setStatus(OnlineStatus.ONLINE);
         builder.setActivity(Activity.watching("You!"));
 
@@ -47,7 +47,7 @@ public class Watchdog {
 
         String url = "jdbc:mysql://" + config.getString("sql.ip") + "/" + config.getString("sql.name");
         String user = config.getString("sql.user");
-        String pass = config.getString("sql.pass");
+        String pass = config.getString("sql.password");
         MySQLWrapper databaseWrapper = new MySQLWrapper(url, user, pass);
 
         CommandManager commandManager = new CommandManager();

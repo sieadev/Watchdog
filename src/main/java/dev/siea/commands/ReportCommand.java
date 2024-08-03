@@ -47,7 +47,7 @@ public class ReportCommand implements WatchdogCommand {
     public void execute(@NotNull SlashCommandInteractionEvent event) {
         User target = Objects.requireNonNull(event.getOption("user")).getAsUser();
         User reporter = event.getUser();
-        ReportType type = ReportType.valueOf(Objects.requireNonNull(event.getOption("reportType")).getAsString());
+        ReportType type = ReportType.valueOf(Objects.requireNonNull(event.getOption("report_type")).getAsString());
 
         ReportQuery query = new ReportQuery(target.getId(), reporter.getId(), type, "No description.");
         int result = databaseWrapper.submitReport(query);

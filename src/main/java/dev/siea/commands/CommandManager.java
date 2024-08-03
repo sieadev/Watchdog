@@ -26,7 +26,7 @@ public class CommandManager extends ListenerAdapter {
      */
     public CommandManager() {
         OptionData userOption = new OptionData(OptionType.USER, "user", "Select a member!", true);
-        OptionData reportTypeOption = new OptionData(OptionType.STRING, "reportType", "Select a report type!", true)
+        OptionData reportTypeOption = new OptionData(OptionType.STRING, "report_type", "Select a report type!", true)
                 .addChoice("Cheating in Video Game", "CHEATING_IN_VIDEO_GAME")
                 .addChoice("Doxxing (Publicizing Private Information)", "DOXXING")
                 .addChoice("Scamming or Fraud", "SCAMMING")
